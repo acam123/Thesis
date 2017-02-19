@@ -1,0 +1,84 @@
+table {
+	table-layout:fixed;
+ 	border:1px solid black;
+}
+
+tbody {
+}
+
+th {
+}
+
+td {
+	text-align:center;
+	border:1px solid black;
+	//height:62px;
+	//width:66px;
+}
+
+.cal_nums {
+	font-size:10px;
+	position: absolute;
+    color: black;
+    top:-6px;
+    right:2px;
+}
+
+.jspsych-infoseek-stimulus.center-content {
+}
+
+.cell_wrap {
+    height:66px;
+    width:66px;
+    position: relative;
+}
+
+.bill_cell{
+	color:red;
+}
+
+.ss_cell {
+	border:3px solid black;
+}
+
+.ll_cell {
+	border:3px solid black;
+}
+
+.ss_txt {
+	color:black;
+}
+
+.ll_txt {
+	color:black;
+}
+
+.cell_val {
+	font-size:20px;
+    position: relative;
+    top: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.key_wrap {
+	width:300px;
+	margin: auto;
+}
+
+.key_left{
+	float:left;
+}
+
+.key_right{
+	float:right;
+}
+
+#bill_cal {
+	margin-left:auto !important;
+	margin-right:auto !important;
+	margin-bottom:20px;
+}
+#bill_txt {
+	text-align:center;
+}
