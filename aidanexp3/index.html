@@ -60,7 +60,6 @@
                 ] //index of the correct answer
         };
 
-        //***could have 5 practice trials and use last 3 to estimate k and generate remaining stimuli???
         var practice_instructions = {
             type: 'instructions',
             pages: 'You will first be given 4 practice trials to familiarize yourself with the task. These trials will be exactly the same as the real task. After each practice trial you will be shown a calendar that shows a summary of your <b>Balance</b> at the end of each week.<p>Click below to begin the 4 practice trials.',
@@ -78,6 +77,7 @@
         var ss_side = [];
 
 
+        // Format parameters into calendar to be fed to stimulus presentation plugin
         function genCalendar(SS, S_D, LL, L_D, B, B_D, meta) {
             var cal = []
             for (i=0; i<=L_D; i++) {
@@ -103,8 +103,8 @@
             - 1st digit -> bill (1) or no bill (2)
 
             for bill trials
-            - 2nd digit -> bill val 1-2 index+1 of Bs
-            - 3rd digit -> bill delay 1-5 index+1 of BDs
+            - 2nd digit -> bill val 1-2 index+1 of Bs # also saved to database
+            - 3rd digit -> bill delay 1-5 index+1 of BDs # also saved to database
             - *5th digit -> ll delay 1-7 index+1 of LDs # also saved to database
 
             for no bill trials
@@ -113,13 +113,13 @@
             - 5th digit -> ll delay # also saved to database
          */ 
 
-        // Stimulus parameter space 
-        SSs = [40,70]
-        Bs = [-10,-20]
-        BDs = [1,3,5,7,9]
-        LLs = [75,100]
-        LDs = [6,8,10,12,14,16,18]
-        LDs2 = [2,6,10,14,18]
+        // Stimulus parameter space
+        SSs = [40,70] // values for ss reward
+        Bs = [-10,-20] // values for bill
+        BDs = [1,3,5,7,9] // delays for bill
+        LLs = [75,100] // values for ll reward
+        LDs = [6,8,10,12,14,16,18] // delays for ll reward on bill trials 
+        LDs2 = [2,6,10,14,18] // delays for ll reward on non-bill trials
 
         // Make all legal combinations of bill trials
         var cals = []
@@ -137,7 +137,7 @@
             }
         }
 
-        // Make all combinations of no bill trials
+        // Make all combinations of non-bill trials
         m = 20000
         for (j=0; j<SSs.length; j++) {
             m = m - (m%1000)+ 1000
@@ -153,35 +153,38 @@
         var num_trials = cals.length;
         length_cals = 24 
 
-        for (i = 0; i< num_trials; i++) {
+        // Fill out tail of calendar to ensure 24 weeks 
+        for (i=0; i<num_trials; i++) {
             appends = 25 - cals[i].length 
-            for (j = 0; j<appends; j++) {
+            for (j=0; j<appends; j++) {
                 cals[i].push({typ:'empty',val:0})
             }
         }
 
-
+        // Randomize trials 
         cal = []
-        for (i=0; i< num_trials; i++) {
+        for (i=0; i<num_trials; i++) {
             index = Math.floor(Math.random() * cals.length)
             cal[i] = cals[index];
             cals.splice(index, 1);          
         }
 
-        // define color_scheme
+        // Define color_scheme
         color_scheme = [];
         color_schemes = [1,2];
         my_color = color_schemes[Math.floor(Math.random() * color_schemes.length)];
         for (i=0; i< num_trials; i++) {
             color_scheme[i] = my_color;
         }
-
+        
+        // Set iti (*used to be random)
         iti_length = 1000; 
         iti = [];
         for (i=0; i < num_trials; i++) {
             iti[i] = iti_length;
         }
-
+        
+        // Make practice trials 
         p_cals = [
             [{typ:'ss',val:35,meta:100},{typ:'b',val:-10},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'ll',val:100,meta:1}],
             [{typ:'ss',val:45,meta:200},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'empty',val:0},{typ:'ll',val:100,meta:1}],
@@ -190,7 +193,8 @@
         ];
 
         var p_num_trials = p_cals.length;
-
+        
+        // Fill out practice trials to ensure 24 weeks 
         for (i = 0; i< p_num_trials; i++) {
             appends = 25 - p_cals[i].length 
             for (j = 0; j<appends; j++) {
@@ -198,6 +202,7 @@
             }
         }
 
+        // Set practice trials variables
         var infoseek_practice = {
             type: 'infoseek',
             isPractice: [1, 1, 1, 1],
@@ -209,7 +214,8 @@
 
         };
 
-        for (var i = 0; i < num_trials; i++) {
+        // Randomize ss_side (*used in previous iterations of experiment)
+        for (var i=0; i<num_trials; i++) {
             isPractice[i] = 0;
             if (Math.random() < .5) { //Coin flip
                 ss_side[i] = 1;
@@ -219,7 +225,8 @@
         }
 
         var stimuli = [];
-
+        
+        // Set non practice trial variables 
         var infoseek_block = {
             type: 'infoseek',
             isPractice: isPractice,
@@ -230,6 +237,7 @@
             iti: iti
         };
 
+        // Ask Financial Literacy Questions 
         var survey_trial = {
             type: 'survey-dropdown',
             //type: 'instructions-dropdownsurvey',
