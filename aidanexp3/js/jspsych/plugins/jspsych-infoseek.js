@@ -1,9 +1,11 @@
+/*
+This is the main plugin that controls the flow of the experiment
+*/
+
 (function($) {
 jsPsych.infoseek = (function(){
 
   var plugin = {};
-
-  //aidan made
   var trial_num = 0;
 
 plugin.create = function(params) {
@@ -11,29 +13,29 @@ plugin.create = function(params) {
     for (var i = 0; i < trials.length; i++) {
         trials[i] = {};
         trials[i].isPractice = params.isPractice[i];
-        trials[i].color_scheme = params.color_scheme[i];    
+        trials[i].color_scheme = params.color_scheme[i]; // formerly used to randomize color presentation    
         trials[i].ss_side = params.ss_side[i];
         trials[i].cal = params.cal[i];   
         trials[i].left_key = params.left_key || 70; // defaults to 'f'
         trials[i].right_key = params.right_key || 71; // defaults to 'g'
-        trials[i].iti = params.iti[i];
+        trials[i].iti = params.iti[i]; //formerly used to randomize iti time
     }
     return trials;
 };
 
-  plugin.trial = function(display_element, trial){
-    
+plugin.trial = function(display_element, trial){
     var ITI = trial.iti;
-    var trial_timeout = 6500; 
-    var ss_pos = 0;
-    var ll_pos = 0;
-    var timeout;
+    var trial_timeout = 6500; // formerly used to limit length of stimulus presentation
+    var ss_pos = 0; // keeps track of ss day option
+    var ll_pos = 0; // keeps track of ll day option
+    var timeout; // formerly used to add a timeout on practice trials
     var color_left;
     var color_right;
-    var row_length = 10;
-    var no_response_wait = 10000;
-    var practice_relsults_time = 10000;
+    var row_length = 10; // shape of calendar 
+    var no_response_wait = 10000; 
+    var practice_relsults_time = 10000; // time for practice trial result presentation
 
+    // Color Handling
     colors = {a:'#6cff00', b:'#00fdff'};
     
     if (trial.color_scheme == 1) {
@@ -45,26 +47,25 @@ plugin.create = function(params) {
       color_right = colors.a;
     }
 
+    // Initiate Trial Variables
     var trial_data = {};
-      
       trial_data.isPractice = trial.isPractice;
       trial_data.color_scheme = trial.color_scheme;  
       trial_data.ss_side = trial.ss_side;
       trial_data.cal = trial.cal;
       trial_data.iti = trial.iti;
       trial_data.trial_timeout = trial_timeout;
-      trial_data.version = 300;
+      trial_data.version = 300; 
 
       
-        function get(name) {
-            if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
-                return decodeURIComponent(name[1]);
-        } //courtesy StackOverflow user Rafael http://stackoverflow.com/questions/831030/how-to-get-get-request-parameters-in-javascript
-
-        var workerID = get('workerID');
-      
+    function get(name) {
+      if (name = (new RegExp('[?&]' + encodeURIComponent(name) + '=([^&]*)')).exec(location.search))
+        return decodeURIComponent(name[1]);
+      } //courtesy StackOverflow user Rafael http://stackoverflow.com/questions/831030/how-to-get-get-request-parameters-in-javascript
+      var workerID = get('workerID');
       trial_data.workerID = workerID;
 
+    // Text for Calnedar Corners
     function time_text(i) {
       var tt;
       if (i == 0) {
@@ -79,6 +80,7 @@ plugin.create = function(params) {
       return tt;
     }
 
+    // Grammar Correction Wrapper for Practice Result  
     function time_text_2(i) {
       if (i == 0) {
         tt = time_text(i);
@@ -89,6 +91,7 @@ plugin.create = function(params) {
       return tt;
     }
 
+    // Generate Calendar Stimuli  
     function choice(){
         //Display each option
         len = trial.cal.length; 
@@ -200,9 +203,8 @@ plugin.create = function(params) {
 
     var key_complete = function(info) {
       clearTimeout(timeout);
-      /* UNCOMMENT FOR TIMEOUT
-      clearTimeout(timer1);
-      */
+      //UNCOMMENT FOR TIMEOUT
+      // clearTimeout(timer1);
 
       //clean up choice screen   
       $("#bill_txt").remove();
@@ -210,6 +212,9 @@ plugin.create = function(params) {
       complete(info);
     }
 
+    
+    // UNCOMMENT FOR TIMEOUT!!! 
+    /*
     var time_complete = function() {
       var info = {key:-1};
       jsPsych.pluginAPI.cancelAllKeyboardResponses();
@@ -222,6 +227,7 @@ plugin.create = function(params) {
     function showBlankScreen() {
         display_element.html('');
     }
+    */
       
     function save_data(data){
        var data_table = "aidan_table"; // change this for different experiments
@@ -240,11 +246,13 @@ plugin.create = function(params) {
        });
     }
       
+    // UNCOMMENT FOR TIMEOUT!!! 
+    /*
     function remove_countdown(info) {
       $("#countdown").remove();
       $("#next-button").remove();
-      //complete(info);
     }
+    */
 
     function next_button(info) {
       button_text = '<br><button>Next ></button>';
@@ -260,6 +268,9 @@ plugin.create = function(params) {
       });
     }
 
+
+    // UNCOMMENT FOR TIMEOUT!!! 
+    /*
     function startTimer(cur_time, display, info) {
         timer = setInterval(function () {
             display.textContent = cur_time;
@@ -290,6 +301,7 @@ plugin.create = function(params) {
       display = document.querySelector('#timer');
       startTimer(cur_time, display, info);
     }
+    */
       
     var complete = function(info) {
         //Handle non response trials
@@ -302,9 +314,8 @@ plugin.create = function(params) {
           chosen = info.key;
 
         //FOR RANDOM SS SIDE ASSIGNMENTS, DEFINE CHOSE_SS 
-      /*
-        chose_ss = ((trial.ss_side == 1) && (chosen == trial.left_key)) || ((trial.ss_side == 2) && (chosen == trial.right_key));
-      */
+        //  chose_ss = ((trial.ss_side == 1) && (chosen == trial.left_key)) || ((trial.ss_side == 2) && (chosen == trial.right_key));
+      
 
         //FOR LEFT-SS RIGHT-LL ASSIGNMENTS, DEFINE CHOSE_SS 
         chose_ss = (chosen == trial.left_key);
@@ -322,7 +333,7 @@ plugin.create = function(params) {
               display_iti();
             }
           }
-          else if (trial.isPractice == 1) {
+          else if (trial.isPractice == 1) { // GENERATE RESPONSE CALENDAR AND TEXT FOR PRACTICE TRIALS
            // ITI_text = '';
             len = trial.cal.length; 
             balance = 0;
@@ -490,19 +501,16 @@ plugin.create = function(params) {
             html: ITI_text
           }));
 
-          function remove_ITI() {
-            //$("#practice_results").remove();
+          function remove_iti() {
             $("#ITI_text").remove();
             jsPsych.finishTrial();
           } 
 
           setTimeout(function() {
-            remove_ITI();
+            remove_iti();
           }, ITI);
         }
-
-
-        //trial_data.cal = JSON.stringify(trial_data.cal);
+      
         //Trial specific number in meta of cal [0]/ss 
         trial_data.cal = trial.cal[0].meta;
 
@@ -512,9 +520,7 @@ plugin.create = function(params) {
 
     trial_num += 1;
     choice(); 
-  }
-
-  
+  } 
   
   return plugin;
 
