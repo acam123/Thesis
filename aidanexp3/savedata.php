@@ -7,12 +7,11 @@
 //
 //  The script you link should contain the following two lines:
 //
-// $dbc = mysql_connect('localhost', 'root', '68allstonst');
-// mysql_select_db('experiment', $dbc);
+// $dbc = mysql_connect('servername', 'username', 'password');
+// mysql_select_db('tablename', $dbc);
 //
 
 include('database_connect.php');                                                                                                              
-//include('/home/gershmanlab/php_include/database_connect.php');
 
 // You should not need to edit below this line
 
